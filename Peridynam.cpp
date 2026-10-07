@@ -1,1 +1,15 @@
-// ověření přístupu ke GitHubu
+#include <iostream>
+
+int main() {
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+    return 0;
+}
