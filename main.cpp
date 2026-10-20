@@ -1,3 +1,6 @@
+#include <iostream>
+#include "particles.hpp"
+
 //hlavni fce
     //nastaveni hodnot materialovych param - E, rho atd.
     //natavení rozteče bodů, horizontu, tloušťky, objemu částice
@@ -16,3 +19,14 @@
     // definice fce na export dat
         //export deformovanych souradnic
         //export skalarniho pole disipovane energie
+
+int main()
+{
+    Particles particles;
+    particles.add_particle({0.01, 0.02}, 1e-6);   //test - funguje
+    particles.add_particle({0.03, 0.04}, 1e-6);
+
+    std::cout << particles.positions[1][0] << std::endl;
+  
+    return 0;
+}
