@@ -23,10 +23,29 @@
 int main()
 {
     Particles particles;
-    particles.add_particle({0.01, 0.02}, 1e-6);   //test - funguje
-    particles.add_particle({0.03, 0.04}, 1e-6);
+    // particles.add_particle({0.01, 0.02}, 1e-6);   //test - funguje
+    // particles.add_particle({0.03, 0.04}, 1e-6);
 
-    std::cout << particles.positions[1][0] << std::endl;
+    double dx = 1;
+    double dy = 1;
+    double t = 1; 
+
+
+    for (int i = 0; i <= 100; i++) {
+        for (int j = 0; j <= 50; j++) {
+            if ((i == 0 || i == 100) && (j == 0 || j == 50)) {
+            particles.add_particle({i * dx, j * dy}, 0.25*dx*dy*t);
+            }
+            else if (i == 0 || i == 100 || j == 0 || j == 50) {
+                    particles.add_particle({i * dx, j * dy}, 0.5*dx*dx*t);
+            }
+            else {
+                particles.add_particle({i * dx, j * dy}, dx*dy*t);
+            }
+        }
+    }
   
+    std::cout << particles.positions[1][0] << std::endl;
+
     return 0;
 }
