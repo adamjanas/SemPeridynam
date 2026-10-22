@@ -28,7 +28,7 @@ int main()
     // particles.add_particle({0.03, 0.04}, 1e-6);
 
     // velikost objektu - rozměry desky
-    double t = 1;  // tloušťka
+    double tloustka = 1;  // tloušťka
     double Lx = 100; 
     double Ly = 50;
     double Sx = Lx/2; //střed díry
@@ -47,13 +47,13 @@ int main()
                 continue; // přeskočí krok - add_particle() se nespustí - přeskočí body se souřadnicemi v díře
             }
             if ((i == 0 || i == Ny) && (j == 0 || j == Nx)) {
-                particles.add_particle({j * dl, i * dl}, 0.25 * dl * dl * t);
+                particles.add_particle({j * dl, i * dl}, 0.25 * dl * dl * tloustka);
             }
             else if (i == 0 || i == Ny || j == 0 || j == Nx) {
-                particles.add_particle({j * dl, i * dl}, 0.5 * dl * dl * t);
+                particles.add_particle({j * dl, i * dl}, 0.5 * dl * dl * tloustka);
             }
             else {
-                particles.add_particle({j * dl, i * dl}, dl * dl * t);
+                particles.add_particle({j * dl, i * dl}, dl * dl * tloustka);
             }
         }
     }
