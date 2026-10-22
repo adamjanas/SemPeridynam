@@ -4,9 +4,10 @@
     // výpočet bezrozměrných parametrů
 
 #ifndef SOLVER_HPP
+#define SOLVER_HPP
 #include <cmath>
 #include "particles.hpp"
-#define SOLVER_HPP
+
 
 //struct - kontejner obsahujici materialove parametry
 struct MatParams {
