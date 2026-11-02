@@ -22,7 +22,7 @@ struct Particles {
 // sousedé a vazby
     std::vector<std::vector<int>> neighbors;
     std::vector<std::vector<bool>> active_bonds;
-    std::vector<std::vector<double>> initial_bond_length;
+    std::vector<std::vector<double>> initial_bond_lengths;
 
     void add_particle(std::array<double, 2> position, double volume) {
         initial_positions.push_back(position);
@@ -32,6 +32,6 @@ struct Particles {
         force_densities.push_back({0, 0});
         neighbors.push_back({});
         active_bonds.push_back({});
-        initial_bond_length.push_back({});
+        initial_bond_lengths.push_back({});
     }
 };

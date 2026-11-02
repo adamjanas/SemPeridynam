@@ -16,7 +16,8 @@
 struct Grid {
     std::vector<signed int> particle_indices;
 
-    // vytvoření mapy pro možnost lokality bodu vůči jiným podle indexu
+    // vytvoření mapy pro možnost lokality bodu vůči jiným podle indexu 
+    // - získáme (Nx+1)*(Ny+1) mapu bodů, kde indexy -1 značí chybějící částici (oblast díry) a jiné indexy jsou stejné, jak indexy bodů v struct Particles
     void build_map(const Particles& p, double dl, int Nx, int Ny) { 
         particle_indices.resize((Nx + 1) * (Ny + 1));
         for (int i = 0; i <= Ny; i++) {
@@ -33,26 +34,36 @@ struct Grid {
         }
     }
 
+    // hledání a postavení sousedů
     void build_neighbors(Particles& p, const MatParams& mat, double dl, int Nx, int Ny) {
-        int build_delta = std::round(mat.delta / dl); // ulozeni do int pro porovnani s int dále + jediné převedení std::round - delta se zadava do MatParams v jednotkách, tady je bezrozmerne
+        // ulozeni do int pro porovnani s int dále + jediné převedení std::round - delta se zadava do MatParams v jednotkách, tady je bezrozmerne
+        int build_delta = std::round(mat.delta / dl); 
+        // double pro absolutní měření
         double measure_delta = mat.delta / dl;
         for (int i = 0; i <= Ny; i++) {
             for (int j = 0; j <= Nx; j++) {
                 std::vector<int> built_neighbors;
                 std::vector<bool> built_active_bonds;
+                std::vector<double> built_bond_lengths;
                 int i_map = i * (Nx + 1) + j;
                 if (particle_indices[i_map] == -1) {
                     continue;
                 } 
-                // hledáme v 2*delta * 2*delta čtverci kolem částice
+                // hledáme v 2*delta * 2*delta čtverci kolem částice, nesmíme hledat mimo particle_indices mapu
                 int i_low_bound = std::max(i - build_delta, 0);
                 int j_low_bound = std::max(j - build_delta, 0);
                 int i_high_bound = std::min(i + build_delta, Ny);
                 int j_high_bound = std::min(j + build_delta, Nx);
                 for (int i_neigh = i_low_bound; i_neigh <= i_high_bound; i_neigh++) {
                     for (int j_neigh = j_low_bound; j_neigh <= j_high_bound; j_neigh++) {
-                        double distance = std::sqrt((i_neigh - i) * (i_neigh - i) + (j_neigh - j) * (j_neigh - j)); // bezrozměrná vzdálenost mezi bodem a sousedem
+
+                        // bezrozměrná vzdálenost mezi bodem a sousedem
+                        double distance = std::sqrt((i_neigh - i) * (i_neigh - i) + (j_neigh - j) * (j_neigh - j)); 
+                        
+                        // index souseda na particle_indices mapě
                         int i_map_neigh = i_neigh * (Nx + 1) + j_neigh;
+
+                        // přeskakujeme svojí částici a neexistující částice, kontrolujeme podmínku vzdálenosti
                         if (particle_indices[i_map_neigh] == -1) {
                             continue;
                         } 
@@ -65,11 +76,13 @@ struct Grid {
                         else {
                             built_neighbors.push_back(particle_indices[i_map_neigh]);
                             built_active_bonds.push_back(true);
+                            built_bond_lengths.push_back(distance * dl);
                         } 
                     }
                 }
                 p.neighbors[particle_indices[i_map]] = built_neighbors;
                 p.active_bonds[particle_indices[i_map]] = built_active_bonds;
+                p.initial_bond_lengths[particle_indices[i_map]] = built_bond_lengths;
             }
         }
     }

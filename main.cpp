@@ -23,8 +23,8 @@
         //export deformovanych souradnic
         //export skalarniho pole disipovane energie
 
-// fce pro vysíťování desky s dírou, pozor - přidává body k již existující Particles deska
-void vysitovaniDesky(Particles& deska, double tloustka, double Sx, double Sy, double R, double dl, int Nx, int Ny) {    
+// fce pro vysíťování desky s dírou, pozor - přidává body k již existující Particles desce, nevytvoří novou desku
+void boardMeshing(Particles& deska, double tloustka, double Sx, double Sy, double R, double dl, int Nx, int Ny) {    
     for (int i = 0; i <= Ny; i++) {
         for (int j = 0; j <= Nx; j++) {
             if ((dl * j - Sx)*(dl * j - Sx) + (dl * i - Sy) * (dl * i - Sy) < R * R) { // x^2+y^2<R^2 - podmína pro díru
@@ -63,9 +63,7 @@ int main()
 
     Grid boardMap;
 
-    MatParams parametry;
-
-    //====================NASTAVUJEME=========================
+    //====================NASTAVUJEME===============================
     // velikost desky [m]
     double tloustka = 1e-3;  // tloušťka
     double Lx = 100e-3; 
@@ -80,7 +78,7 @@ int main()
     // parametry sítě
     double dl = 1e-3; // vzdálenost mezi body sítě (m)
 
-    //=======================================================
+    //==============================================================
     // není potřeba nastavit
     double delta = 3 * dl;
 
@@ -90,23 +88,45 @@ int main()
     double Sx = Lx/2; //střed díry
     double Sy = Ly/2; 
 
-// vysíťování obdelníku - síťuji po řádcích - síťuji i hraniční body - mají menší objem přiřazený k materiálovému bodu - proto obsahují if funkce - pokud jsou přesně na kraji, tak mají poloviční objem, v rohu mají čtvrtinový objem
-    vysitovaniDesky(board, tloustka, Sx, Sy, R, dl, Nx, Ny);
+    MatParams parameters;
 
+    parameters.E = E;
+    parameters.rho = rho;
+    parameters.Gc = Gc;
+    parameters.delta = delta;
+    parameters.tloustka = tloustka;
+
+    parameters.vypocet_zavislych_param();
+
+    // vysíťování obdelníku - síťuji po řádcích 
+    // síťuji i hraniční body - mají menší objem přiřazený k materiálovému bodu - proto obsahují if - pokud jsou přesně na kraji, tak mají poloviční objem, v rohu mají čtvrtinový objem
+    boardMeshing(board, tloustka, Sx, Sy, R, dl, Nx, Ny);
+
+    // sestavení mapy pro hledání sousedů
     boardMap.build_map(board, dl, Nx, Ny);
   
-    // //kontrola Nx, Ny a dalších šikovných veličin
+    // hledání a sestavení sousedů
+    boardMap.build_neighbors(board, parameters, dl, Nx, Ny);
+    
 
-    std::cout << boardMap.particle_indices[50 * (Nx + 1) + 100] <<std::endl;
+    //kontrola Nx, Ny a dalších šikovných veličin
 
-    // std::cout << Nx << ' ' << Ny << std::endl;
+    // std::cout << boardMap.particle_indices[0 * (Nx + 1) + 0] <<std::endl;
+    // std::cout << board.neighbors[boardMap.particle_indices[0 * (Nx + 1) + 0]][0] <<std::endl;
+
+    int a = 0;
+    for (int k = 0; k < board.initial_bond_lengths[boardMap.particle_indices[a]].size(); k++) {
+        std::cout << board.initial_bond_lengths[boardMap.particle_indices[a]][k] << std::endl;
+    };
+
+    std::cout << Nx << ' ' << Ny << std::endl;
 
     // std::cout << deska.positions.size() << std::endl;
     // std::cout << particles_volume_sum << std::endl;
     // std::cout << deska.initial_positions[100][0] << std::endl;
 
-// využití mapovací funkce - složitost O(n)
-    visualization(boardMap, Nx, Ny);
+    // využití mapovací funkce - složitost O(n)
+    // visualization(boardMap, Nx, Ny);
 
     return 0;
 }
