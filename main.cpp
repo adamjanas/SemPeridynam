@@ -25,40 +25,6 @@
         //export deformovanych souradnic
         //export skalarniho pole disipovane energie
 
-// fce pro vysíťování desky s dírou, pozor - přidává body k již existující Particles desce, nevytvoří novou desku
-void boardMeshing(Particles& deska, double tloustka, double Sx, double Sy, double R, double dl, int Nx, int Ny) {    
-    for (int i = 0; i <= Ny; i++) {
-        for (int j = 0; j <= Nx; j++) {
-            if ((dl * j - Sx)*(dl * j - Sx) + (dl * i - Sy) * (dl * i - Sy) < R * R) { // x^2+y^2<R^2 - podmína pro díru
-                continue; // přeskočí krok - add_particle() se nespustí - přeskočí body se souřadnicemi v díře
-            }
-            if ((i == 0 || i == Ny) && (j == 0 || j == Nx)) {
-                deska.add_particle({j * dl, i * dl}, 0.25 * dl * dl * tloustka);
-            }
-            else if (i == 0 || i == Ny || j == 0 || j == Nx) {
-                deska.add_particle({j * dl, i * dl}, 0.5 * dl * dl * tloustka);
-            }
-            else {
-                deska.add_particle({j * dl, i * dl}, dl * dl * tloustka);
-            }
-        }
-    }
-}
-
-// fce pro vizualizaci zadaného objektu - využívá mapovací funkce, složitost O(n)
-void visualization(const Grid& g, int Nx, int Ny) {
-    for (int i = 0; i <= Ny; i++) {
-        for (int j = 0; j <= Nx; j++) {
-            if (g.particle_indices[i * (Nx + 1) + j] == -1) {
-                std::cout << ' ';
-            } else {
-                std::cout << "O";
-            }
-        }
-        std::cout << std::endl;
-    }
-}
-
 int main()
 {
     Particles board;
@@ -109,7 +75,7 @@ int main()
 
     // vysíťování obdelníku - síťuji po řádcích 
     // síťuji i hraniční body - mají menší objem přiřazený k materiálovému bodu - proto obsahují if - pokud jsou přesně na kraji, tak mají poloviční objem, v rohu mají čtvrtinový objem
-    boardMeshing(board, tloustka, Sx, Sy, R, dl, Nx, Ny);
+    board.boardMeshing(tloustka, Sx, Sy, R, dl, Nx, Ny);
 
     // sestavení mapy pro hledání sousedů
     boardMap.build_map(board, dl, Nx, Ny);
@@ -131,19 +97,15 @@ int main()
     // std::cout << boardMap.particle_indices[0 * (Nx + 1) + 0] <<std::endl;
     // std::cout << board.neighbors[boardMap.particle_indices[0 * (Nx + 1) + 0]][0] <<std::endl;
 
-    int a = 0;
-    for (size_t k = 0; k < board.initial_bond_lengths[boardMap.particle_indices[a]].size(); k++) {
-        std::cout << board.initial_bond_lengths[boardMap.particle_indices[a]][k] << std::endl;
-    };
+    // int a = 0;
+    // for (size_t k = 0; k < board.initial_bond_lengths[boardMap.particle_indices[a]].size(); k++) {
+    //     std::cout << board.initial_bond_lengths[boardMap.particle_indices[a]][k] << std::endl;
+    // };
 
-    std::cout << Nx << ' ' << Ny << std::endl;
-
-    // std::cout << deska.positions.size() << std::endl;
-    // std::cout << particles_volume_sum << std::endl;
-    // std::cout << deska.initial_positions[100][0] << std::endl;
+    std::cout << "Nx = " << Nx << ' ' << "Ny = " << Ny << std::endl;
 
     // využití mapovací funkce - složitost O(n)
-    // visualization(boardMap, Nx, Ny);
+    boardMap.visualization(Nx, Ny);
 
     return 0;
 }

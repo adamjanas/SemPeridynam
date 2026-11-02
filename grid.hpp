@@ -96,4 +96,18 @@ struct Grid {
             }
         }
     }
+
+    // vizualizace zadání - využívá mapovací funkce, složitost O(n)
+    void visualization(int Nx, int Ny) {
+        for (int i = 0; i <= Ny; i++) {
+            for (int j = 0; j <= Nx; j++) {
+                if (particle_indices[i * (Nx + 1) + j] == -1) {
+                    std::cout << ' ';
+                } else {
+                    std::cout << "O";
+                }
+            }
+            std::cout << std::endl;
+        }
+    }
 };
