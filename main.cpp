@@ -1,6 +1,8 @@
 #include <iostream>
 #include "particles.hpp"
 #include "grid.hpp"
+#include "solver.hpp"
+#include "solver.cpp"
 
 //hlavni fce
     //nastaveni hodnot materialovych param - E, rho atd.
@@ -41,23 +43,14 @@ void vysitovaniDesky(Particles& deska, double tloustka, double Sx, double Sy, do
     }
 }
 
-// fce por vizualizaci - obsahuje cyklus pro porovnání s výchozí neupravenou sítí ((Nx+1)*(Ny+1)), složitost O(n^2)
-void visualization(const Particles& deska, double dl, int Nx, int Ny) { // const zabrání úpravě
+// fce pro vizualizaci - využívá mapovací funkce, složitost O(n)
+void visualization(const Grid& g, int Nx, int Ny) {
     for (int i = 0; i <= Ny; i++) {
         for (int j = 0; j <= Nx; j++) {
-            bool found = false;
-            double x = j * dl;
-            double y = i * dl;
-            for (std::size_t k = 0; k < deska.initial_positions.size(); k++) {
-                if (x == deska.initial_positions[k][0] && y == deska.initial_positions[k][1]) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) {
-                std::cout << "O";
-            } else {
+            if (g.particle_indices[i * (Nx + 1) + j] == -1) {
                 std::cout << ' ';
+            } else {
+                std::cout << "O";
             }
         }
         std::cout << std::endl;
@@ -70,18 +63,32 @@ int main()
 
     Grid boardMap;
 
-    // velikost desky
-    double tloustka = 1;  // tloušťka
-    double Lx = 100; 
-    double Ly = 50;
-    double Sx = Lx/2; //střed díry
-    double Sy = Ly/2; 
-    double R = 10; //poloměr díry
+    MatParams parametry;
+
+    //====================NASTAVUJEME=========================
+    // velikost desky [m]
+    double tloustka = 1e-3;  // tloušťka
+    double Lx = 100e-3; 
+    double Ly = 50e-3;
+    double R = 10e-3; //poloměr díry
+
+    // vlastnosti materiálu
+    double E = 210e9; // Pa
+    double rho = 7850; // kg/m^3
+    double Gc = 12500; // N/m
 
     // parametry sítě
-    double dl = 1; // vzdálenost mezi body sítě 
+    double dl = 1e-3; // vzdálenost mezi body sítě (m)
+
+    //=======================================================
+    // není potřeba nastavit
+    double delta = 3 * dl;
+
     int Nx = Lx / dl; // interval bodů - máme x = 0 až x = 100 pro jeden řádek (počet sloupců bodů je Nx + 1) - nutné převést na int
     int Ny = Ly / dl; // interval bodů
+
+    double Sx = Lx/2; //střed díry
+    double Sy = Ly/2; 
 
 // vysíťování obdelníku - síťuji po řádcích - síťuji i hraniční body - mají menší objem přiřazený k materiálovému bodu - proto obsahují if funkce - pokud jsou přesně na kraji, tak mají poloviční objem, v rohu mají čtvrtinový objem
     vysitovaniDesky(board, tloustka, Sx, Sy, R, dl, Nx, Ny);
@@ -90,7 +97,7 @@ int main()
   
     // //kontrola Nx, Ny a dalších šikovných veličin
 
-    std::cout << boardMap.particle_indices[25 * (Nx + 1) + 50] <<std::endl;
+    std::cout << boardMap.particle_indices[50 * (Nx + 1) + 100] <<std::endl;
 
     // std::cout << Nx << ' ' << Ny << std::endl;
 
@@ -98,21 +105,8 @@ int main()
     // std::cout << particles_volume_sum << std::endl;
     // std::cout << deska.initial_positions[100][0] << std::endl;
 
-//vizualizace 
-
-   // visualization(board, dl, Nx, Ny);
-
 // využití mapovací funkce - složitost O(n)
-    for (int i = 0; i <= Ny; i++) {
-        for (int j = 0; j <= Nx; j++) {
-            if (boardMap.particle_indices[i * (Nx + 1) + j] == -1) {
-                std::cout << ' ';
-            } else {
-                std::cout << "O";
-            }
-        }
-        std::cout << std::endl;
-    }
+    visualization(boardMap, Nx, Ny);
 
     return 0;
 }
