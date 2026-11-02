@@ -26,10 +26,8 @@ void Solver::compute_forces(Particles& p, const MatParams& mat) {
 
             int j = p.neighbors[i][k];
 
-            //vypocet delky vazby pred def
-            double r0_x = p.initial_positions[j][0] - p0i_x;
-            double r0_y = p.initial_positions[j][1] - p0i_y;
-            double init_length = std::hypot(r0_x, r0_y);
+            //délka vazby
+            double init_length = p.initial_bond_lengths[i][k];
 
             //preskoceni pro cleny bez deformace
             if (init_length == 0) {
@@ -87,7 +85,7 @@ void Solver::time_step_verlet(Particles& p, const MatParams& mat, double dt) {
             // vypocet vektoru polohy a posuvu => vypocet delky vazby
             // vypocet relativniho prodlouzeni a kontrola zda nebylo prekroceno max
             // vypocet hustoty siloveho pole a akumulace elasticke potenc. energie
-            compute_forces(p, mat);
+    compute_forces(p, mat);
     // dokonceni casoveho kroku
     for (size_t i = 0; i < num_particles; ++i){
     double acc_x = p.force_densities[i][0] * inv_rho;
