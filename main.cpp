@@ -43,7 +43,7 @@ void boardMeshing(Particles& deska, double tloustka, double Sx, double Sy, doubl
     }
 }
 
-// fce pro vizualizaci - využívá mapovací funkce, složitost O(n)
+// fce pro vizualizaci zadaného objektu - využívá mapovací funkce, složitost O(n)
 void visualization(const Grid& g, int Nx, int Ny) {
     for (int i = 0; i <= Ny; i++) {
         for (int j = 0; j <= Nx; j++) {
@@ -77,6 +77,8 @@ int main()
 
     // parametry sítě
     double dl = 1e-3; // vzdálenost mezi body sítě (m)
+
+    double dt = 0.1;
 
     //==============================================================
     // není potřeba nastavit
@@ -115,7 +117,7 @@ int main()
     // std::cout << board.neighbors[boardMap.particle_indices[0 * (Nx + 1) + 0]][0] <<std::endl;
 
     int a = 0;
-    for (int k = 0; k < board.initial_bond_lengths[boardMap.particle_indices[a]].size(); k++) {
+    for (size_t k = 0; k < board.initial_bond_lengths[boardMap.particle_indices[a]].size(); k++) {
         std::cout << board.initial_bond_lengths[boardMap.particle_indices[a]][k] << std::endl;
     };
 

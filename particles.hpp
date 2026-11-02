@@ -19,7 +19,11 @@ struct Particles {
     std::vector<std::array<double, 2>> force_densities;
 
     std::vector<double> volumes;
-// sousedé a vazby
+    
+    // 0 - klasická, 1 - fixní, 2 - předepsaný posun
+    std::vector<int> boundary_type;
+
+    // sousedé a vazby
     std::vector<std::vector<int>> neighbors;
     std::vector<std::vector<bool>> active_bonds;
     std::vector<std::vector<double>> initial_bond_lengths;
@@ -33,5 +37,6 @@ struct Particles {
         neighbors.push_back({});
         active_bonds.push_back({});
         initial_bond_lengths.push_back({});
+        boundary_type.push_back(0);
     }
 };
