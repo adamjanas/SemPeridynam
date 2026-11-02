@@ -1,8 +1,10 @@
 #include <iostream>
+#include <string>
 #include "particles.hpp"
 #include "grid.hpp"
 #include "solver.hpp"
 #include "solver.cpp"
+#include "io.hpp"
 
 //hlavni fce
     //nastaveni hodnot materialovych param - E, rho atd.
@@ -78,7 +80,12 @@ int main()
     // parametry sítě
     double dl = 1e-3; // vzdálenost mezi body sítě (m)
 
-    double dt = 0.1;
+    // konfigurace parametru simulace
+    int total_steps = 5000;
+    //pocet exportovanych kroku
+    int num_steps = 100;
+    int output_frequency = total_steps / num_steps;
+    double dt = 1e-5;
 
     //==============================================================
     // není potřeba nastavit
@@ -109,7 +116,15 @@ int main()
   
     // hledání a sestavení sousedů
     boardMap.build_neighbors(board, parameters, dl, Nx, Ny);
-    
+ 
+    //Hlavni loop simulace - volani solveru
+        //for cyklus pres vsechny steps
+            //volame solver
+            // if step % output_frequency == 0
+                //generovani nazvu frame_xxxxxx.vtk
+                //volani io - write_vtk
+                //oznameni do konzole o exportu
+        //konec cyklu
 
     //kontrola Nx, Ny a dalších šikovných veličin
 
