@@ -93,18 +93,21 @@ int main()
 
     //Hlavni loop simulace - volani solveru
         //for cyklus pres vsechny steps
+            for (int i = 0; i < total_steps; i++) {
             //volame solver
+            Solver::time_step_verlet(board, parameters, dt);
             // if step % output_frequency == 0
-                //generovani nazvu frame_xxxxxx.vtk
-                //volani io - write_vtk
-                //oznameni do konzole o exportu
+                if (i % output_frequency == 0) {
+                    //generovani nazvu frame_xxxxxx.vtk
+                    std::string step_str = std::to_string(i);
+                    std::string padded_step = std::string(6 - std::min(size_t(6), step_str.length()), '0') + step_str;
+                    std::string filename = "frame_" + padded_step + ".vtk";
+                    //volani io - write_vtk
+                    write_vtk_file(filename, board);
+                    //oznameni do konzole o exportu
+                    std::cout << "Exported snapshot at step " << i << " -> paraview/" << filename << "\n";
+                }
         //konec cyklu
-    for (int i = 0; i < total_steps; i++) {
-        Solver::time_step_verlet(board, parameters, dt);
-        if (i % output_frequency == 0) {
-
-        }
-    }
 
     //kontrola Nx, Ny a dalších šikovných veličin
 
@@ -121,5 +124,6 @@ int main()
     // využití mapovací funkce - složitost O(n)
     boardMap.visualization();
 
+    std::cout << "Simulation finished successfully!\n";
     return 0;
 }
