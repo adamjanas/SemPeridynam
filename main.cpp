@@ -5,6 +5,7 @@
 #include "solver.hpp"
 #include "solver.cpp"
 #include "io.hpp"
+#include "io.cpp"
 
 //hlavni fce
     //nastaveni hodnot materialovych param - E, rho atd.
@@ -47,11 +48,11 @@ int main()
     double dl = 1e-3; // vzdálenost mezi body sítě (m)
 
     // konfigurace parametru simulace
-    int total_steps = 5000;
+    int total_steps = 50000;
     //pocet exportovanych kroku
     int num_steps = 100;
     int output_frequency = total_steps / num_steps;
-    double dt = 1e-5;
+    double dt = 1e-7;
 
     //=====================================================================
     // není potřeba nastavit
@@ -89,7 +90,7 @@ int main()
  
     // zadání OP - 5 sloupců vlevo se nebude hýbat, 5 sloupců vpravo má předepsané posunutí
     boardMap.set_fixed_boundary_type (board, 0, 4, 0, Ny);
-    boardMap.set_fixed_displacement(board, dt, total_steps, 20e-3, 0, Nx - 4, Nx, 0, Ny);
+    boardMap.set_fixed_displacement(board, dt, total_steps, 10e-3, 0, Nx - 4, Nx, 0, Ny);
 
     //Hlavni loop simulace - volani solveru
         //for cyklus pres vsechny steps
@@ -107,6 +108,7 @@ int main()
                     //oznameni do konzole o exportu
                     std::cout << "Exported snapshot at step " << i << " -> paraview/" << filename << "\n";
                 }
+            }
         //konec cyklu
 
     //kontrola Nx, Ny a dalších šikovných veličin
@@ -124,6 +126,6 @@ int main()
     // využití mapovací funkce - složitost O(n)
     boardMap.visualization();
 
-    std::cout << "Simulation finished successfully!\n";
+    std::cout << "Simulation finished successfully! :D\n";
     return 0;
 }
