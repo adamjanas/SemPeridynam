@@ -7,6 +7,7 @@
     // kontrola zda částice jsou v okolí delta částice for cyklu
 
 #pragma once
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include "particles.hpp"
@@ -114,12 +115,29 @@ struct Grid {
         }
     }
 
-    void set_boundary_conditions(Particles& p, int type, int x_start, int x_end, int y_start, int y_end) {
+    // nastavení fixního bodu - nehýbe se
+    void set_fixed_boundary_type(Particles& p, int x_start, int x_end, int y_start, int y_end) {
         for(int i = x_start; i <= x_end; i++) {
             for(int j = y_start; j <= y_end; j++) {
                 int i_map = j * (Nx + 1) + i;
                 if (particle_indices[i_map] != -1) {
-                    p.boundary_type[particle_indices[i_map]] = type;
+                    p.boundary_type[particle_indices[i_map]] = 1;
+                }
+            }
+        }
+    }
+
+    // nastavení předepsaného posunutí delta_x/delta_y - POZOR!!! => meze x,y_start/end musí ležet uvnitř [0, Nx] popř. [0, Ny] intervalů
+    void set_fixed_displacement(Particles& p, double dt, double total_steps, double delta_x, double delta_y, int x_start, int x_end, int y_start, int y_end) {
+        for(int i = x_start; i <= x_end; i++) {
+            for(int j = y_start; j <= y_end; j++) {
+                int i_map = j * (Nx + 1) + i;
+                if (particle_indices[i_map] != -1) {
+                    p.boundary_type[particle_indices[i_map]] = 2;
+
+                    // pro nastavení posunutí nastavuji konst. rychlost
+                    p.velocities[particle_indices[i_map]][0] = delta_x / (dt * total_steps);
+                    p.velocities[particle_indices[i_map]][1] = delta_y / (dt * total_steps);
                 }
             }
         }

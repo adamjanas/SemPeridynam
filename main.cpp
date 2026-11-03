@@ -87,9 +87,9 @@ int main()
     // hledání a sestavení sousedů
     boardMap.build_neighbors(board, parameters);
  
-    // zadání OP
-    boardMap.set_boundary_conditions(board, 1, 0, 4, 0, Ny);
-    boardMap.set_boundary_conditions(board, 2, Nx - 5, Nx, 0, Ny);
+    // zadání OP - 5 sloupců vlevo se nebude hýbat, 5 sloupců vpravo má předepsané posunutí
+    boardMap.set_fixed_boundary_type (board, 0, 4, 0, Ny);
+    boardMap.set_fixed_displacement(board, dt, total_steps, 20e-3, 0, Nx - 4, Nx, 0, Ny);
 
     //Hlavni loop simulace - volani solveru
         //for cyklus pres vsechny steps
@@ -99,12 +99,12 @@ int main()
                 //volani io - write_vtk
                 //oznameni do konzole o exportu
         //konec cyklu
-    // for (int i = 0; i <= total_steps; i++) {
-    //     Solver::time_step_verlet(board, parameters, dt);
-    //     if (i % output_frequency == 0) {
+    for (int i = 0; i < total_steps; i++) {
+        Solver::time_step_verlet(board, parameters, dt);
+        if (i % output_frequency == 0) {
 
-    //     }
-    // }
+        }
+    }
 
     //kontrola Nx, Ny a dalších šikovných veličin
 
