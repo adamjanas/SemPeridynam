@@ -31,7 +31,7 @@ int main()
 
     Grid boardMap;
 
-    //====================NASTAVUJEME===============================
+    //====================NASTAVUJEME=====================================
     // velikost desky [m]
     double tloustka = 1e-3;  // tloušťka
     double Lx = 100e-3; 
@@ -53,14 +53,14 @@ int main()
     int output_frequency = total_steps / num_steps;
     double dt = 1e-5;
 
-    //==============================================================
+    //=====================================================================
     // není potřeba nastavit
     double delta = 3 * dl;
 
     int Nx = Lx / dl; // interval bodů - máme x = 0 až x = 100 pro jeden řádek (počet sloupců bodů je Nx + 1) - nutné převést na int
     int Ny = Ly / dl; // interval bodů
 
-    double Sx = Lx/2; //střed díry
+    double Sx = Lx/2; //střed díry - prozatím uprostřed
     double Sy = Ly/2; 
 
     MatParams parameters;
@@ -71,18 +71,26 @@ int main()
     parameters.delta = delta;
     parameters.tloustka = tloustka;
 
+    boardMap.Nx = Nx;
+    boardMap.Ny = Ny;
+    boardMap.dl = dl;
+
     parameters.vypocet_zavislych_param();
 
-    // vysíťování obdelníku - síťuji po řádcích 
+    // vysíťování desky - síťuji po řádcích 
     // síťuji i hraniční body - mají menší objem přiřazený k materiálovému bodu - proto obsahují if - pokud jsou přesně na kraji, tak mají poloviční objem, v rohu mají čtvrtinový objem
     board.boardMeshing(tloustka, Sx, Sy, R, dl, Nx, Ny);
 
     // sestavení mapy pro hledání sousedů
-    boardMap.build_map(board, dl, Nx, Ny);
+    boardMap.build_map(board);
   
     // hledání a sestavení sousedů
-    boardMap.build_neighbors(board, parameters, dl, Nx, Ny);
+    boardMap.build_neighbors(board, parameters);
  
+    // zadání OP
+    boardMap.set_boundary_conditions(board, 1, 0, 4, 0, Ny);
+    boardMap.set_boundary_conditions(board, 2, Nx - 5, Nx, 0, Ny);
+
     //Hlavni loop simulace - volani solveru
         //for cyklus pres vsechny steps
             //volame solver
@@ -91,6 +99,12 @@ int main()
                 //volani io - write_vtk
                 //oznameni do konzole o exportu
         //konec cyklu
+    // for (int i = 0; i <= total_steps; i++) {
+    //     Solver::time_step_verlet(board, parameters, dt);
+    //     if (i % output_frequency == 0) {
+
+    //     }
+    // }
 
     //kontrola Nx, Ny a dalších šikovných veličin
 
@@ -105,7 +119,7 @@ int main()
     std::cout << "Nx = " << Nx << ' ' << "Ny = " << Ny << std::endl;
 
     // využití mapovací funkce - složitost O(n)
-    boardMap.visualization(Nx, Ny);
+    boardMap.visualization();
 
     return 0;
 }
