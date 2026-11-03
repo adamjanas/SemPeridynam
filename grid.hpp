@@ -15,9 +15,12 @@
 
 struct Grid {
     std::vector<signed int> particle_indices;
+    int Nx;
+    int Ny;
+    double dl;
 
     // vytvoření mapy pro možnost lokality bodu vůči jiným podle indexu 
-    void build_map(const Particles& p, double dl, int Nx, int Ny) { 
+    void build_map(const Particles& p) { 
         
         // změní velikost inicializovaného particle_indi. na (Nx + 1) * (Ny + 1)
         particle_indices.resize((Nx + 1) * (Ny + 1));
@@ -40,7 +43,7 @@ struct Grid {
     }
 
     // hledání a postavení sousedů
-    void build_neighbors(Particles& p, const MatParams& mat, double dl, int Nx, int Ny) {
+    void build_neighbors(Particles& p, const MatParams& mat) {
         
         // ulozeni do int pro porovnani s int dále + jediné převedení std::round - delta se zadava do MatParams v jednotkách, tady je bezrozmerne
         int build_delta = std::round(mat.delta / dl); 
@@ -98,7 +101,7 @@ struct Grid {
     }
 
     // vizualizace zadání - využívá mapovací funkce, složitost O(n)
-    void visualization(int Nx, int Ny) {
+    void visualization() {
         for (int i = 0; i <= Ny; i++) {
             for (int j = 0; j <= Nx; j++) {
                 if (particle_indices[i * (Nx + 1) + j] == -1) {
@@ -110,4 +113,16 @@ struct Grid {
             std::cout << std::endl;
         }
     }
+
+    void set_boundary_conditions(Particles& p, int type, int x_start, int x_end, int y_start, int y_end) {
+        for(int i = x_start; i <= x_end; i++) {
+            for(int j = y_start; j <= y_end; j++) {
+                int i_map = j * (Nx + 1) + i;
+                if (particle_indices[i_map] != -1) {
+                    p.boundary_type[particle_indices[i_map]] = type;
+                }
+            }
+        }
+    }
+
 };

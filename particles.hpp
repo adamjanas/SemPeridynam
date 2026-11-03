@@ -47,6 +47,8 @@ struct Particles {
                 if ((dl * j - Sx)*(dl * j - Sx) + (dl * i - Sy) * (dl * i - Sy) < R * R) { // x^2+y^2<R^2 - podmína pro díru
                     continue; // přeskočí krok - add_particle() se nespustí - přeskočí body se souřadnicemi v díře
                 }
+
+                // menší objem přiřazený částici, pokud leží na hranici desky (chybí podmínka pro hranici díry)
                 if ((i == 0 || i == Ny) && (j == 0 || j == Nx)) {
                     add_particle({j * dl, i * dl}, 0.25 * dl * dl * tloustka);
                 }
