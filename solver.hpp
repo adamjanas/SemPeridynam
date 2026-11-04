@@ -30,9 +30,8 @@ struct MatParams {
 
 };
 
-//class pro uvedeni vnitrnich funkci vypoctu uvnitr solver.cpp pro main.cpp
-class Solver {
-public:
+//struct pro uvedeni vnitrnich funkci vypoctu uvnitr solver.cpp pro main.cpp
+struct Solver {
     // vnitrni fce solver.cpp
     static void compute_forces(Particles& p, const MatParams& mat);
     static void update_damage(Particles& p);
